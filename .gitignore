@@ -1,0 +1,47 @@
+# ---------- Java / Maven ----------
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.war
+
+# ---------- Node / 前端 ----------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# ---------- 本地配置（含密钥，禁止提交）----------
+# 复制 application-local.example.yml 为 application-local.yml 再填自己的凭据
+carepilot-springboot/src/main/resources/application-local.yml
+application-local.yml
+.env
+.env.local
+.env.*.local
+
+# ---------- 运行时数据 ----------
+carepilot-springboot/data/
+uploads/
+logs/
+*.log
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+
+# ---------- 操作系统 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- 其他 ----------
+*.tmp
+*.bak

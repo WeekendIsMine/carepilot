@@ -1,0 +1,21 @@
+# 统一换行：仓库里存 LF，Windows 检出也保持 LF（避免整个仓库 diff 都是换行差异）
+* text=auto eol=lf
+
+# 二进制文件不做文本转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xlsx binary
+*.jar binary
+*.woff binary
+*.woff2 binary
+
+# Windows 脚本保持 CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf

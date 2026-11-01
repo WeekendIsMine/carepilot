@@ -1,0 +1,43 @@
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; }
+
+.el-card, .el-dialog, .el-message-box {
+  border: none !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: var(--radius) !important;
+}
+.el-button { border-radius: 10px; font-weight: 500; }
+.el-button--primary {
+  --el-button-bg-color: var(--accent);
+  --el-button-border-color: var(--accent);
+  --el-button-hover-bg-color: var(--accent-deep);
+  --el-button-hover-border-color: var(--accent-deep);
+}
+.el-input__wrapper, .el-textarea__inner {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--line-strong) inset !important;
+}
+.el-input__wrapper.is-focus, .el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--accent) inset !important;
+}
+.el-table {
+  --el-table-border-color: var(--line);
+  --el-table-header-bg-color: var(--surface-2);
+  --el-table-header-text-color: var(--text-2);
+  font-size: 13px;
+}
+.el-tag { border-radius: 6px; border: none; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d9dde5; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+.mono { font-family: var(--mono); }
+.muted { color: var(--text-3); }
+.sub { color: var(--text-2); }

@@ -1,0 +1,156 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /
+  tomcat:
+    threads:
+      virtual:
+        enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: carepilot
+    distribution:
+      # 打开直方图，Grafana 才能算 p95（否则只有 count/sum/max）
+      percentiles-histogram:
+        carepilot.ai.reply: true
+        carepilot.rag.retrieve: true
+        http.server.requests: true
+
+spring:
+  application:
+    name: carepilot
+  config:
+    import: optional:classpath:application-local.yml
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:carepilot}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 5000
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:admin123}
+    virtual-host: /
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  # 只启用 OpenAI 兼容模式作为默认 chat/embedding 模型（DashScope 兼容端点）
+  ai:
+    model:
+      chat: openai
+      embedding: openai
+      image: none
+      audio.speech: none
+      audio.transcription: none
+      moderation: none
+    openai:
+      base-url: ${AI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode}
+      api-key: ${DASHSCOPE_API_KEY:}
+      chat:
+        options:
+          # qwen3.8-27b 额度已用尽；换成免费额度充足的 qwen3.8-max（可用 AI_CHAT_MODEL 覆盖）
+          model: ${AI_CHAT_MODEL:qwen3.8-max}
+          temperature: 0.5
+      embedding:
+        options:
+          model: ${AI_EMBEDDING_MODEL:qwen3.7-text-embedding-flash}
+
+carepilot:
+  aftersale:
+    # 待审工单超过这个分钟数没处理就自动关闭，并把订单还原（见 TicketTimeoutJob）
+    pending-timeout-minutes: 120
+  kb:
+    # 文档卡在 PENDING/PARSING/EMBEDDING 超过这个分钟数，就当作消息丢了重新投递（见 KbIngestSweepJob）
+    stuck-timeout-minutes: 10
+  ai:
+    api-key: ${DASHSCOPE_API_KEY:}
+  jwt:
+    secret: ${JWT_SECRET:carepilot-dev-secret-key-change-me-0123456789}
+    # 访问令牌 2 小时；过期后前端用刷新令牌静默续期，用户无感
+    access-ttl: 7200
+    # 刷新令牌 30 天；不能用来访问业务接口，只能换新令牌
+    refresh-ttl: 2592000
+    issuer: carepilot
+  rag:
+    embedding-batch: 10
+    # 实测：开启改写没有提升 Hit@3(100%)，却让单次检索从 0.4s 涨到 4.4s，默认关闭
+    query-rewrite: false
+    recall-top-k: 12
+    # 没有精排时排序靠 RRF，召回要宽一点才不至于漏掉关键条款（有精排可调回 5）
+    final-top-k: 8
+    rrf-k: 60
+    # 实测（qwen3-vl-rerank）：相关 0.86~0.89，无关 0.02~0.65，取 0.75 作为拒答线
+    score-threshold: 0.75
+    chunk-size: 450
+    chunk-overlap: 60
+    milvus:
+      host: ${MILVUS_HOST:localhost}
+      port: ${MILVUS_PORT:19530}
+      collection: carepilot_kb_chunk
+    es:
+      url: ${ES_URL:http://localhost:9200}
+      index: carepilot_kb_chunk
+    rerank:
+      # qwen3.7-text-rerank 额度用尽（403 AllocationQuota.FreeTierOnly），
+      # 换到有额度的 qwen3-vl-rerank（接口同样是 text-rerank，返回结构一致）
+      enabled: true
+      model: qwen3-vl-rerank
+      top-n: 8
+      timeout-ms: 4000
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: info
+    com.carepilot: debug
+  # 日志格式带 traceId：一条请求穿过 Controller/Service/RAG/MQ 时能串起来。
+  # 用纯文本（不要 %clr），彩色转换器只在 logback 默认配置里注册过。
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%X{traceId:---}] %-5level %-38.38logger{37} : %msg%n"

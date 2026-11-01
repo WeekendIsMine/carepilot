@@ -1,0 +1,51 @@
+/* 管理后台各面板共用样式（原来都挤在 AdminView 的 scoped style 里） */
+.panel-body { padding: 20px 24px; height: 100%; overflow: auto; }
+.stats { display: flex; gap: 12px; margin-bottom: 16px; }
+.stat {
+  flex: 1; background: var(--surface); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.stat .k { font-size: 12px; color: var(--text-3); }
+.stat .v { font-size: 22px; font-weight: 700; }
+.stat .v.small { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.tool-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.table { background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+.small { font-size: 12px; }
+.pager { margin-top: 12px; justify-content: flex-end; }
+
+.thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; display: block; }
+.thumb.placeholder { display: grid; place-items: center; background: var(--surface-2); color: var(--text-3); font-size: 11px; }
+.p-name { font-size: 13px; }
+.form-row { display: flex; gap: 12px; }
+.form-row .el-form-item { flex: 1; }
+
+.cover-upload { display: flex; flex-direction: column; gap: 8px; }
+.cover-box {
+  width: 120px; height: 120px; border-radius: 12px; overflow: hidden;
+  display: grid; place-items: center; position: relative;
+  background: var(--surface-2); border: 1px dashed var(--line-strong);
+}
+.cover-box.has-img { border-style: solid; }
+.cover-box img { width: 100%; height: 100%; object-fit: cover; }
+.cover-box.empty { cursor: pointer; color: var(--text-3); }
+.cover-box .plus { font-size: 22px; }
+.cover-mask {
+  position: absolute; inset: 0; background: rgba(20, 23, 31, 0.55);
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.cover-box:hover .cover-mask { opacity: 1; }
+
+.preview-body { max-height: 66vh; overflow: auto; }
+.pdf-frame { width: 100%; height: 66vh; border: none; border-radius: 8px; background: var(--surface-2); }
+.text-preview pre {
+  white-space: pre-wrap; word-break: break-word; font-family: var(--font);
+  font-size: 13px; line-height: 1.8; background: var(--surface-2);
+  padding: 16px; border-radius: 10px; margin: 0;
+}
+.md-preview { font-size: 14px; line-height: 1.8; }
+.md-preview h1 { font-size: 20px; margin: 16px 0 8px; }
+.md-preview h2 { font-size: 16px; margin: 14px 0 6px; }
+.md-preview ul { padding-left: 20px; }

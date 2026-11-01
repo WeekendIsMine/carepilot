@@ -1,0 +1,31 @@
+# ============================================================================
+# 本地私有配置模板
+# ----------------------------------------------------------------------------
+# 用法：复制本文件为同目录下的 application-local.yml，再填入自己的凭据。
+#       application-local.yml 已被 .gitignore 忽略，不会进版本库。
+#
+#   Windows:  copy application-local.example.yml application-local.yml
+#   macOS/Linux: cp application-local.example.yml application-local.yml
+#
+# 这个文件由 application.yml 的 spring.config.import 自动加载（optional），
+# 所以不创建它也能启动，只是 AI 对话和图片上传会不可用。
+# ============================================================================
+
+spring:
+  ai:
+    openai:
+      # 必填：DashScope 的 API Key（也支持任何 OpenAI 兼容网关，改 application.yml 里的 base-url 即可）
+      # 建议用环境变量注入：export DASHSCOPE_API_KEY=sk-xxxx
+      api-key: ${DASHSCOPE_API_KEY:sk-your-dashscope-key}
+
+carepilot:
+  ai:
+    api-key: ${DASHSCOPE_API_KEY:sk-your-dashscope-key}
+
+  # 可选：不配置时会降级为「只存本地」，商品图/知识库原件不返回公网地址
+  oss:
+    endpoint: oss-cn-shenzhen.aliyuncs.com
+    bucket: your-bucket
+    prefix: files/
+    access-key-id: YOUR_AK
+    access-key-secret: YOUR_SK
